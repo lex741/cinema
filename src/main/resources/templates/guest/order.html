@@ -1,21 +1,63 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="utf-8"><title>Order</title></head>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Підтвердження</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
 <body>
-<h2>Підтвердження замовлення</h2>
 
-<p><b>Замовлення #</b><span th:text="${order.id}"></span></p>
-<p><b>Фільм:</b> <span th:text="${session.movieTitle}"></span></p>
-<p><b>Час:</b> <span th:text="${#temporals.format(session.startTime, 'dd.MM.yyyy HH:mm')}"></span></p>
-<p><b>Імʼя:</b> <span th:text="${order.customerName}"></span></p>
+<div class="container">
+    <div class="topbar">
+        <div class="brand">
+            CINEMA
+            <span class="badge">Order</span>
+        </div>
+        <div class="nav">
+            <a class="btn" href="/sessions">Сеанси</a>
+            <a class="btn" href="/admin/reservations">Admin</a>
+        </div>
+    </div>
 
-<p><b>Місця:</b></p>
-<ul>
-    <li th:each="sid : ${order.seatIds}" th:text="${sid}"></li>
-</ul>
+    <div class="card">
+        <div class="card-body">
+            <h1 class="h1">Замовлення підтверджено</h1>
+            <div class="muted small">Дані замовлення нижче.</div>
 
-<p><b>Сума:</b> <span th:text="${total}"></span></p>
+            <div class="hr"></div>
 
-<p><a href="/sessions">До списку сеансів</a></p>
+            <div class="grid">
+                <div class="col-6">
+                    <div class="muted small">Замовлення</div>
+                    <div class="h2">#<span th:text="${order.id}"></span></div>
+
+                    <div class="muted small" style="margin-top:10px">
+                        🎬 <span th:text="${session.movieTitle}"></span><br>
+                        🕒 <span th:text="${#temporals.format(session.startTime,'dd.MM.yyyy HH:mm')}"></span><br>
+                        🏛 <span th:text="${session.hall}"></span><br>
+                        👤 <span th:text="${order.customerName} ?: 'Guest'"></span>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="muted small">Місця</div>
+                    <div class="tags" style="margin-top:8px">
+                        <span class="tag" th:each="sid : ${order.seatIds}" th:text="${sid}">R1-S1</span>
+                    </div>
+
+                    <div class="hr"></div>
+
+                    <div class="muted small">Сума</div>
+                    <div class="h2"><span th:text="${total}"></span></div>
+                </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <a class="btn btn-primary" href="/sessions">Повернутись до сеансів</a>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

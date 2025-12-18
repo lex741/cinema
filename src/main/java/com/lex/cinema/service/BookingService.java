@@ -42,7 +42,7 @@ public class BookingService {
         }
 
         // перевірка доступності + бронювання
-        Map<String, Seat> seatMap = new HashMap<>();
+        Map<String, gitSeat> seatMap = new HashMap<>();
         for (Seat seat : session.getSeats()) seatMap.put(seat.getId(), seat);
 
         for (String seatId : seatIds) {
@@ -60,7 +60,7 @@ public class BookingService {
 
         Reservation r = new Reservation();
         r.setSessionId(sessionId);
-        r.setCustomerName(customerName == null || customerName.isBlank() ? "Guest" : customerName.trim());
+        r.setCustomerName(normalizeName(customerName));
         r.setSeatIds(new ArrayList<>(seatIds));
         r.setCreatedAt(LocalDateTime.now());
         Reservation saved = reservationRepo.save(r);
@@ -90,5 +90,14 @@ public class BookingService {
         }
         sessionRepo.save(session);
         reservationRepo.deleteById(reservationId);
+    }
+
+    private String normalizeName(String name) {
+        if (name == null) return "Guest";
+        String v = name.trim();
+        if (v.isBlank()) return "Guest";
+        v = v.replace("<", "").replace(">", "");
+        if (v.length() > 40) v = v.substring(0, 40);
+        return v;
     }
 }

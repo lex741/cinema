@@ -1,23 +1,57 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="utf-8"><title>Sessions</title></head>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Сеанси</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
 <body>
-<h2>Сеанси</h2>
 
-<ul>
-    <li th:each="s : ${sessions}">
-        <a th:href="@{/sessions/{id}(id=${s.id})}">
-            <span th:text="${s.movieTitle}"></span>
-            —
-            <span th:text="${#temporals.format(s.startTime, 'dd.MM.yyyy HH:mm')}"></span>
-            —
-            <span th:text="${s.hall}"></span>
-            —
-            <span th:text="${s.price}"></span>
-        </a>
-    </li>
-</ul>
+<div class="container">
+    <div class="topbar">
+        <div class="brand">
+            CINEMA
+            <span class="badge">Guest</span>
+        </div>
+        <div class="nav">
+            <a class="btn" href="/admin/sessions">Admin</a>
+        </div>
+    </div>
 
-<p><a href="/admin/sessions">Admin</a></p>
+    <div class="card">
+        <div class="card-body">
+            <h1 class="h1">Сеанси</h1>
+            <div class="muted small">Обери сеанс і перейди до вибору місць.</div>
+
+            <div class="hr"></div>
+
+            <div class="list">
+                <div class="card session-card" th:each="s : ${sessions}">
+                    <div class="session-icon">🎬</div>
+                    <div style="flex:1">
+                        <div class="h2" th:text="${s.movieTitle}">Movie</div>
+                        <div class="kv">
+              <span class="pill">
+                🕒 <span th:text="${#temporals.format(s.startTime,'dd.MM.yyyy HH:mm')}"></span>
+              </span>
+                            <span class="pill">
+                🏛 <span th:text="${s.hall}"></span>
+              </span>
+                            <span class="pill">
+                💳 <span th:text="${s.price}"></span>
+              </span>
+                        </div>
+
+                        <div style="margin-top:12px">
+                            <a class="btn btn-primary" th:href="@{/sessions/{id}(id=${s.id})}">Обрати місця</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

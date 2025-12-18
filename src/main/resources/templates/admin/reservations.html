@@ -1,27 +1,56 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="utf-8"><title>Admin Reservations</title></head>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Reservations</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
 <body>
-<h2>Admin: Замовлення</h2>
 
-<p><a href="/admin/sessions">Сеанси</a> | <a href="/sessions">Guest view</a></p>
+<div class="container">
+    <div class="topbar">
+        <div class="brand">
+            CINEMA
+            <span class="badge">Admin</span>
+        </div>
+        <div class="nav">
+            <a class="btn" href="/admin/sessions">Сеанси</a>
+            <a class="btn" href="/sessions">Guest</a>
+        </div>
+    </div>
 
-<table border="1" cellpadding="6">
-    <tr>
-        <th>ID</th><th>SessionId</th><th>Name</th><th>Seats</th><th>Created</th><th>Дії</th>
-    </tr>
-    <tr th:each="r : ${reservations}">
-        <td th:text="${r.id}"></td>
-        <td th:text="${r.sessionId}"></td>
-        <td th:text="${r.customerName}"></td>
-        <td th:text="${r.seatIds}"></td>
-        <td th:text="${#temporals.format(r.createdAt, 'dd.MM.yyyy HH:mm')}"></td>
-        <td>
-            <form th:action="@{/admin/reservations/{id}/cancel(id=${r.id})}" method="post">
-                <button type="submit">Cancel</button>
-            </form>
-        </td>
-    </tr>
-</table>
+    <div class="card">
+        <div class="card-body">
+            <h1 class="h1">Замовлення</h1>
+            <div class="muted small">Перегляд і скасування бронювань.</div>
+
+            <div class="hr"></div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th><th>SessionId</th><th>Name</th><th>Seats</th><th>Created</th><th>Дії</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="data" th:each="r : ${reservations}">
+                    <td th:text="${r.id}"></td>
+                    <td th:text="${r.sessionId}"></td>
+                    <td th:text="${r.customerName}"></td>
+                    <td th:text="${r.seatIds}"></td>
+                    <td th:text="${#temporals.format(r.createdAt,'dd.MM.yyyy HH:mm')}"></td>
+                    <td>
+                        <form th:action="@{/admin/reservations/{id}/cancel(id=${r.id})}" method="post">
+                            <button class="btn btn-danger" type="submit">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

@@ -1,32 +1,58 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="utf-8"><title>Admin Sessions</title></head>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Sessions</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
 <body>
-<h2>Admin: Сеанси</h2>
 
-<p>
-    <a href="/admin/sessions/new">+ Створити сеанс</a> |
-    <a href="/admin/reservations">Замовлення</a> |
-    <a href="/sessions">Guest view</a>
-</p>
+<div class="container">
+    <div class="topbar">
+        <div class="brand">
+            CINEMA
+            <span class="badge">Admin</span>
+        </div>
+        <div class="nav">
+            <a class="btn" href="/sessions">Guest</a>
+            <a class="btn" href="/admin/reservations">Замовлення</a>
+            <a class="btn btn-primary" href="/admin/sessions/new">+ Створити сеанс</a>
+        </div>
+    </div>
 
-<table border="1" cellpadding="6">
-    <tr>
-        <th>ID</th><th>Фільм</th><th>Час</th><th>Зал</th><th>Ціна</th><th>Дії</th>
-    </tr>
-    <tr th:each="s : ${sessions}">
-        <td th:text="${s.id}"></td>
-        <td th:text="${s.movieTitle}"></td>
-        <td th:text="${#temporals.format(s.startTime, 'dd.MM.yyyy HH:mm')}"></td>
-        <td th:text="${s.hall}"></td>
-        <td th:text="${s.price}"></td>
-        <td>
-            <a th:href="@{/admin/sessions/{id}/edit(id=${s.id})}">Edit</a>
-            <form th:action="@{/admin/sessions/{id}/delete(id=${s.id})}" method="post" style="display:inline">
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-</table>
+    <div class="card">
+        <div class="card-body">
+            <h1 class="h1">Сеанси</h1>
+            <div class="muted small">CRUD для сеансів.</div>
+
+            <div class="hr"></div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th><th>Фільм</th><th>Час</th><th>Зал</th><th>Ціна</th><th>Дії</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="data" th:each="s : ${sessions}">
+                    <td th:text="${s.id}"></td>
+                    <td th:text="${s.movieTitle}"></td>
+                    <td th:text="${#temporals.format(s.startTime,'dd.MM.yyyy HH:mm')}"></td>
+                    <td th:text="${s.hall}"></td>
+                    <td th:text="${s.price}"></td>
+                    <td>
+                        <a class="btn" th:href="@{/admin/sessions/{id}/edit(id=${s.id})}">Edit</a>
+                        <form th:action="@{/admin/sessions/{id}/delete(id=${s.id})}" method="post" style="display:inline">
+                            <button class="btn btn-danger" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

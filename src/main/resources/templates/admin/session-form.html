@@ -1,30 +1,146 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="utf-8"><title>Session Form</title></head>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Session Form</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
 <body>
-<h2 th:text="${mode == 'create' ? 'Створити сеанс' : 'Редагувати сеанс'}"></h2>
 
-<form th:if="${mode == 'create'}" action="/admin/sessions" method="post">
-    <label>Фільм: <input name="movieTitle" th:value="${session.movieTitle}"/></label><br/>
-    <label>Зал: <input name="hall" th:value="${session.hall}"/></label><br/>
-    <label>Початок: <input type="datetime-local" name="startTime"
-                           th:value="${#temporals.format(session.startTime, 'yyyy-MM-dd''T''HH:mm')}" /></label><br/>
-    <label>Ціна: <input name="price" th:value="${session.price}"/></label><br/>
-    <label>Ряди: <input name="rows" th:value="${rows}"/></label><br/>
-    <label>Місць/ряд: <input name="seatsPerRow" th:value="${seatsPerRow}"/></label><br/>
-    <button type="submit">Зберегти</button>
-</form>
+<div class="container">
+    <div class="topbar">
+        <div class="brand">
+            CINEMA
+            <span class="badge">Admin</span>
+        </div>
+        <div class="nav">
+            <a class="btn" href="/admin/sessions">Сеанси</a>
+            <a class="btn" href="/admin/reservations">Замовлення</a>
+            <a class="btn" href="/sessions">Guest</a>
+        </div>
+    </div>
 
-<form th:if="${mode == 'edit'}"
-      th:action="@{/admin/sessions/{id}(id=${session.id})}" method="post">
-    <label>Фільм: <input name="movieTitle" th:value="${session.movieTitle}"/></label><br/>
-    <label>Зал: <input name="hall" th:value="${session.hall}"/></label><br/>
-    <label>Початок: <input type="datetime-local" name="startTime"
-                           th:value="${#temporals.format(session.startTime, 'yyyy-MM-dd''T''HH:mm')}" /></label><br/>
-    <label>Ціна: <input name="price" th:value="${session.price}"/></label><br/>
-    <button type="submit">Оновити</button>
-</form>
+    <div class="card">
+        <div class="card-body">
 
-<p><a href="/admin/sessions">← назад</a></p>
+            <h1 class="h1" th:switch="${mode}">
+                <span th:case="'create'">+ Створити сеанс</span>
+                <span th:case="'edit'">Редагувати сеанс</span>
+                <span th:case="*">Сеанс</span>
+            </h1>
+            <div class="muted small" th:switch="${mode}">
+                <span th:case="'create'">Заповни поля, додай ряди та місця — і сеанс з’явиться у списку.</span>
+                <span th:case="'edit'">Можна змінити назву/зал/час/ціну. Місця не перегенеровуються, щоб не скидати броні.</span>
+                <span th:case="*">Форма сеансу.</span>
+            </div>
+
+            <div class="hr"></div>
+
+            <form th:if="${mode == 'create'}"
+                  th:action="@{/admin/sessions}"
+                  method="post"
+                  class="form">
+                <div class="grid">
+                    <div class="col-6">
+                        <div class="field">
+                            <label>Фільм</label>
+                            <input class="input" name="movieTitle" th:value="${session.movieTitle}" placeholder="Напр. Interstellar">
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="field">
+                            <label>Зал</label>
+                            <input class="input" name="hall" th:value="${session.hall}" placeholder="Hall A">
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="field">
+                            <label>Початок</label>
+                            <input class="input" type="datetime-local" name="startTime"
+                                   th:value="${#temporals.format(session.startTime, 'yyyy-MM-dd''T''HH:mm')}">
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="field">
+                            <label>Ціна</label>
+                            <input class="input" name="price" th:value="${session.price}" placeholder="150">
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="field">
+                            <label>Ряди</label>
+                            <input class="input" name="rows" th:value="${rows}" placeholder="5">
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="field">
+                            <label>Місць у ряду</label>
+                            <input class="input" name="seatsPerRow" th:value="${seatsPerRow}" placeholder="8">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hr"></div>
+
+                <div style="display:flex; gap:10px; align-items:center; justify-content:flex-end;">
+                    <a class="btn" href="/admin/sessions">Скасувати</a>
+                    <button class="btn btn-primary" type="submit">Створити</button>
+                </div>
+            </form>
+
+            <!-- EDIT -->
+            <form th:if="${mode == 'edit'}"
+                  th:action="@{/admin/sessions/{id}(id=${session.id})}"
+                  method="post"
+                  class="form">
+
+                <div class="grid">
+                    <div class="col-6">
+                        <div class="field">
+                            <label>Фільм</label>
+                            <input class="input" name="movieTitle" th:value="${session.movieTitle}">
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="field">
+                            <label>Зал</label>
+                            <input class="input" name="hall" th:value="${session.hall}">
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="field">
+                            <label>Початок</label>
+                            <input class="input" type="datetime-local" name="startTime"
+                                   th:value="${#temporals.format(session.startTime, 'yyyy-MM-dd''T''HH:mm')}">
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="field">
+                            <label>Ціна</label>
+                            <input class="input" name="price" th:value="${session.price}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hr"></div>
+
+                <div style="display:flex; gap:10px; align-items:center; justify-content:flex-end;">
+                    <a class="btn" href="/admin/sessions">Назад</a>
+                    <button class="btn btn-primary" type="submit">Оновити</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

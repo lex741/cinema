@@ -1,33 +1,111 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="utf-8"><title>Session</title></head>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Вибір місць</title>
+    <link rel="stylesheet" href="/css/app.css">
+</head>
 <body>
-<h2 th:text="${session.movieTitle}">Movie</h2>
-<p>
-    <b>Час:</b> <span th:text="${#temporals.format(session.startTime, 'dd.MM.yyyy HH:mm')}"></span><br/>
-    <b>Зал:</b> <span th:text="${session.hall}"></span><br/>
-    <b>Ціна:</b> <span th:text="${session.price}"></span>
-</p>
 
-<form th:action="@{/sessions/{id}/order(id=${session.id})}" method="post">
-    <label>Імʼя: <input name="customerName"/></label>
-    <h3>Місця (вибери вільні)</h3>
-
-    <div th:each="seat : ${session.seats}">
-        <label th:if="${!seat.reserved}">
-            <input type="checkbox" name="seatIds" th:value="${seat.id}"/>
-            <span th:text="${seat.id}"></span>
-        </label>
-
-        <span th:if="${seat.reserved}">
-      <b th:text="${seat.id}"></b> (занято)
-    </span>
-        <br/>
+<div class="container">
+    <div class="topbar">
+        <div class="brand">
+            CINEMA
+            <span class="badge">Seat selection</span>
+        </div>
+        <div class="nav">
+            <a class="btn" href="/sessions">Сеанси</a>
+            <a class="btn" href="/admin/sessions">Admin</a>
+        </div>
     </div>
 
-    <button type="submit">Замовити</button>
-</form>
+    <div class="grid">
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="h1" th:text="${session.movieTitle}">Movie</h1>
+                    <div class="muted small">
+                        <div>🕒 <span th:text="${#temporals.format(session.startTime,'dd.MM.yyyy HH:mm')}"></span></div>
+                        <div>🏛 <span th:text="${session.hall}"></span></div>
+                        <div>💳 <span th:text="${session.price}"></span> / місце</div>
+                    </div>
 
-<p><a href="/sessions">← назад</a></p>
+                    <div class="hr"></div>
+
+                    <div class="seat-legend small">
+                        <span><i class="dot dot-free"></i>вільне</span>
+                        <span><i class="dot dot-busy"></i>зайняте</span>
+                        <span><i class="dot dot-picked"></i>обране</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h2">Обери місця</h2>
+
+                    <form th:action="@{/sessions/{id}/order(id=${sessionId})}" method="post" class="form">
+
+                        <div class="field">
+                            <label>Імʼя (необовʼязково)</label>
+                            <input class="input" name="customerName" placeholder="Напр. Павло">
+                        </div>
+
+                        <div class="seat-map">
+                            <div class="screen">SCREEN</div>
+
+                            <!-- seatRows: Map<Integer, List<Seat>> -->
+                            <div th:each="rowEntry : ${seatRows}" class="seat-row">
+                                <div class="row-label" th:text="${rowEntry.key}">1</div>
+
+                                <div class="row-seats">
+                                    <div th:each="seat : ${rowEntry.value}" style="position:relative">
+
+                                        <!-- ВІЛЬНЕ місце (можна вибрати) -->
+                                        <th:block th:unless="${seat.reserved}">
+                                            <input class="seat-input"
+                                                   type="checkbox"
+                                                   name="seatIds"
+                                                   th:value="${seat.id}"
+                                                   th:id="'seat_' + ${seat.id}">
+                                            <label th:for="'seat_' + ${seat.id}"
+                                                   class="seat-label"
+                                                   th:text="${seat.number}">
+                                                1
+                                            </label>
+                                        </th:block>
+
+                                        <!-- ЗАЙНЯТЕ місце (не можна вибрати) -->
+                                        <th:block th:if="${seat.reserved}">
+                                            <input class="seat-input"
+                                                   type="checkbox"
+                                                   name="seatIds"
+                                                   th:value="${seat.id}"
+                                                   th:id="'seat_' + ${seat.id}"
+                                                   disabled>
+                                            <label th:for="'seat_' + ${seat.id}"
+                                                   class="seat-label seat-label--reserved"
+                                                   th:text="${seat.number}"
+                                                   title="Зайнято">
+                                                1
+                                            </label>
+                                        </th:block>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">Buy Tickets</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
