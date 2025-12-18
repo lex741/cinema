@@ -42,7 +42,7 @@ public class BookingService {
         }
 
         // перевірка доступності + бронювання
-        Map<String, gitSeat> seatMap = new HashMap<>();
+        Map<String, Seat> seatMap = new HashMap<>();
         for (Seat seat : session.getSeats()) seatMap.put(seat.getId(), seat);
 
         for (String seatId : seatIds) {
