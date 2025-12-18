@@ -1,0 +1,33 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="utf-8"><title>Session</title></head>
+<body>
+<h2 th:text="${session.movieTitle}">Movie</h2>
+<p>
+    <b>Час:</b> <span th:text="${#temporals.format(session.startTime, 'dd.MM.yyyy HH:mm')}"></span><br/>
+    <b>Зал:</b> <span th:text="${session.hall}"></span><br/>
+    <b>Ціна:</b> <span th:text="${session.price}"></span>
+</p>
+
+<form th:action="@{/sessions/{id}/order(id=${session.id})}" method="post">
+    <label>Імʼя: <input name="customerName"/></label>
+    <h3>Місця (вибери вільні)</h3>
+
+    <div th:each="seat : ${session.seats}">
+        <label th:if="${!seat.reserved}">
+            <input type="checkbox" name="seatIds" th:value="${seat.id}"/>
+            <span th:text="${seat.id}"></span>
+        </label>
+
+        <span th:if="${seat.reserved}">
+      <b th:text="${seat.id}"></b> (занято)
+    </span>
+        <br/>
+    </div>
+
+    <button type="submit">Замовити</button>
+</form>
+
+<p><a href="/sessions">← назад</a></p>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="utf-8"><title>Session Form</title></head>
+<body>
+<h2 th:text="${mode == 'create' ? 'Створити сеанс' : 'Редагувати сеанс'}"></h2>
+
+<form th:if="${mode == 'create'}" action="/admin/sessions" method="post">
+    <label>Фільм: <input name="movieTitle" th:value="${session.movieTitle}"/></label><br/>
+    <label>Зал: <input name="hall" th:value="${session.hall}"/></label><br/>
+    <label>Початок: <input type="datetime-local" name="startTime"
+                           th:value="${#temporals.format(session.startTime, 'yyyy-MM-dd''T''HH:mm')}" /></label><br/>
+    <label>Ціна: <input name="price" th:value="${session.price}"/></label><br/>
+    <label>Ряди: <input name="rows" th:value="${rows}"/></label><br/>
+    <label>Місць/ряд: <input name="seatsPerRow" th:value="${seatsPerRow}"/></label><br/>
+    <button type="submit">Зберегти</button>
+</form>
+
+<form th:if="${mode == 'edit'}"
+      th:action="@{/admin/sessions/{id}(id=${session.id})}" method="post">
+    <label>Фільм: <input name="movieTitle" th:value="${session.movieTitle}"/></label><br/>
+    <label>Зал: <input name="hall" th:value="${session.hall}"/></label><br/>
+    <label>Початок: <input type="datetime-local" name="startTime"
+                           th:value="${#temporals.format(session.startTime, 'yyyy-MM-dd''T''HH:mm')}" /></label><br/>
+    <label>Ціна: <input name="price" th:value="${session.price}"/></label><br/>
+    <button type="submit">Оновити</button>
+</form>
+
+<p><a href="/admin/sessions">← назад</a></p>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="utf-8"><title>Order</title></head>
+<body>
+<h2>Підтвердження замовлення</h2>
+
+<p><b>Замовлення #</b><span th:text="${order.id}"></span></p>
+<p><b>Фільм:</b> <span th:text="${session.movieTitle}"></span></p>
+<p><b>Час:</b> <span th:text="${#temporals.format(session.startTime, 'dd.MM.yyyy HH:mm')}"></span></p>
+<p><b>Імʼя:</b> <span th:text="${order.customerName}"></span></p>
+
+<p><b>Місця:</b></p>
+<ul>
+    <li th:each="sid : ${order.seatIds}" th:text="${sid}"></li>
+</ul>
+
+<p><b>Сума:</b> <span th:text="${total}"></span></p>
+
+<p><a href="/sessions">До списку сеансів</a></p>
+</body>
+</html>

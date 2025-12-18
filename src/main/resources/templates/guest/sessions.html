@@ -1,0 +1,23 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="utf-8"><title>Sessions</title></head>
+<body>
+<h2>Сеанси</h2>
+
+<ul>
+    <li th:each="s : ${sessions}">
+        <a th:href="@{/sessions/{id}(id=${s.id})}">
+            <span th:text="${s.movieTitle}"></span>
+            —
+            <span th:text="${#temporals.format(s.startTime, 'dd.MM.yyyy HH:mm')}"></span>
+            —
+            <span th:text="${s.hall}"></span>
+            —
+            <span th:text="${s.price}"></span>
+        </a>
+    </li>
+</ul>
+
+<p><a href="/admin/sessions">Admin</a></p>
+</body>
+</html>

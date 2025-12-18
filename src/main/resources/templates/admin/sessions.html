@@ -1,0 +1,32 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="utf-8"><title>Admin Sessions</title></head>
+<body>
+<h2>Admin: Сеанси</h2>
+
+<p>
+    <a href="/admin/sessions/new">+ Створити сеанс</a> |
+    <a href="/admin/reservations">Замовлення</a> |
+    <a href="/sessions">Guest view</a>
+</p>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>ID</th><th>Фільм</th><th>Час</th><th>Зал</th><th>Ціна</th><th>Дії</th>
+    </tr>
+    <tr th:each="s : ${sessions}">
+        <td th:text="${s.id}"></td>
+        <td th:text="${s.movieTitle}"></td>
+        <td th:text="${#temporals.format(s.startTime, 'dd.MM.yyyy HH:mm')}"></td>
+        <td th:text="${s.hall}"></td>
+        <td th:text="${s.price}"></td>
+        <td>
+            <a th:href="@{/admin/sessions/{id}/edit(id=${s.id})}">Edit</a>
+            <form th:action="@{/admin/sessions/{id}/delete(id=${s.id})}" method="post" style="display:inline">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
