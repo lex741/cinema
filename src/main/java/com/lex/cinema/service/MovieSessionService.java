@@ -1,52 +1,44 @@
 package com.lex.cinema.service;
 
-import com.lex.cinema.exception.NotFoundException;
 import com.lex.cinema.model.MovieSession;
-import com.lex.cinema.model.Seat;
-import com.lex.cinema.repository.MovieSessionRepository;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
-public class MovieSessionService {
+public interface MovieSessionService {
 
-    private final MovieSessionRepository repo;
+    // --- новые методы (ЛР5) ---
+    MovieSession get(long id);
 
-    public MovieSessionService(MovieSessionRepository repo) {
-        this.repo = repo;
+    List<MovieSession> list(String title,
+                            String hall,
+                            LocalDateTime from,
+                            LocalDateTime to,
+                            int page,
+                            int size);
+
+    long count(String title, String hall, LocalDateTime from, LocalDateTime to);
+
+    MovieSession create(MovieSession s, int rows, int seatsPerRow);
+
+    MovieSession update(long id, MovieSession s);
+
+    void delete(long id);
+
+    // --- сумісність зі старим контролером (щоб зібралось без правок контролера) ---
+    default List<MovieSession> list() {
+        return list(null, null, null, null, 0, 100);
     }
 
-    public List<MovieSession> list() {
-        return repo.findAll();
+    default MovieSession getOrThrow(Long id) {
+        if (id == null) throw new IllegalArgumentException("id is null");
+        return get(id);
     }
 
-    public MovieSession getOrThrow(Long id) {
-        return repo.findById(id).orElseThrow(() -> new NotFoundException("Session not found: " + id));
-    }
-
-    public MovieSession create(MovieSession session, int rows, int seatsPerRow) {
-        session.setSeats(generateSeats(rows, seatsPerRow));
-        return repo.save(session);
-    }
-
-    public MovieSession update(MovieSession session) {
-        return repo.save(session);
-    }
-
-    public void delete(Long id) {
-        repo.deleteById(id);
-    }
-
-    private List<Seat> generateSeats(int rows, int seatsPerRow) {
-        List<Seat> seats = new ArrayList<>();
-        for (int r = 1; r <= rows; r++) {
-            for (int s = 1; s <= seatsPerRow; s++) {
-                String id = "R" + r + "-S" + s;
-                seats.add(new Seat(id, r, s, false));
-            }
+    default MovieSession update(MovieSession s) {
+        if (s == null || s.getId() == null) {
+            throw new IllegalArgumentException("session/id is null");
         }
-        return seats;
+        return update(s.getId(), s);
     }
 }

@@ -24,7 +24,7 @@ public class AdminController {
 
     @GetMapping("/sessions")
     public String sessions(Model model) {
-        model.addAttribute("sessions", sessionService.list());
+        model.addAttribute("sessions", sessionService.list(null, null, null, null, 0, 1000));
         return "admin/sessions";
     }
 
@@ -35,6 +35,7 @@ public class AdminController {
         s.setHall("Hall 1");
         s.setStartTime(LocalDateTime.now().plusDays(1).withSecond(0).withNano(0));
         s.setPrice(new BigDecimal("150"));
+
         model.addAttribute("session", s);
         model.addAttribute("rows", 5);
         model.addAttribute("seatsPerRow", 8);
@@ -46,7 +47,7 @@ public class AdminController {
     public String createSession(
             @RequestParam String movieTitle,
             @RequestParam String hall,
-            @RequestParam String startTime, // ISO-local, з html datetime-local
+            @RequestParam String startTime,
             @RequestParam BigDecimal price,
             @RequestParam int rows,
             @RequestParam int seatsPerRow
@@ -56,48 +57,50 @@ public class AdminController {
         s.setHall(hall);
         s.setStartTime(LocalDateTime.parse(startTime));
         s.setPrice(price);
+
         sessionService.create(s, rows, seatsPerRow);
         return "redirect:/admin/sessions";
     }
 
     @GetMapping("/sessions/{id}/edit")
-    public String editSession(@PathVariable Long id, Model model) {
-        model.addAttribute("session", sessionService.getOrThrow(id));
+    public String editSession(@PathVariable long id, Model model) {
+        model.addAttribute("session", sessionService.get(id));
         model.addAttribute("mode", "edit");
         return "admin/session-form";
     }
 
     @PostMapping("/sessions/{id}")
     public String updateSession(
-            @PathVariable Long id,
+            @PathVariable long id,
             @RequestParam String movieTitle,
             @RequestParam String hall,
             @RequestParam String startTime,
             @RequestParam BigDecimal price
     ) {
-        MovieSession s = sessionService.getOrThrow(id);
+        MovieSession s = new MovieSession();
         s.setMovieTitle(movieTitle);
         s.setHall(hall);
         s.setStartTime(LocalDateTime.parse(startTime));
         s.setPrice(price);
-        sessionService.update(s);
+
+        sessionService.update(id, s);
         return "redirect:/admin/sessions";
     }
 
     @PostMapping("/sessions/{id}/delete")
-    public String deleteSession(@PathVariable Long id) {
+    public String deleteSession(@PathVariable long id) {
         sessionService.delete(id);
         return "redirect:/admin/sessions";
     }
 
     @GetMapping("/reservations")
     public String reservations(Model model) {
-        model.addAttribute("reservations", bookingService.listAll());
+        model.addAttribute("reservations", bookingService.list(null, 0, 1000));
         return "admin/reservations";
     }
 
     @PostMapping("/reservations/{id}/cancel")
-    public String cancelReservation(@PathVariable Long id) {
+    public String cancelReservation(@PathVariable long id) {
         bookingService.cancel(id);
         return "redirect:/admin/reservations";
     }
