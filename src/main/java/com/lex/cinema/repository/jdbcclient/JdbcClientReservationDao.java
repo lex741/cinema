@@ -91,7 +91,6 @@ public class JdbcClientReservationDao implements ReservationDao {
                 null
         )).list();
 
-        // підтягнемо seatIds (для звіту/демо)
         for (Reservation r : res) {
             r.setSeatIds(findSeatIds(r.getId()));
         }

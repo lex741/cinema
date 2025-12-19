@@ -10,7 +10,7 @@ public class MovieSession {
     private String hall;
     private LocalDateTime startTime;
     private BigDecimal price;
-    private List<Seat> seats; // підтягуємо в сервісі
+    private List<Seat> seats;
 
     public MovieSession() {}
 

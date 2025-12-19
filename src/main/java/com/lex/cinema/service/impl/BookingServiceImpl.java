@@ -57,7 +57,7 @@ public class BookingServiceImpl implements BookingService {
         // 2) create reservation (id from DB)
         long rid = reservationDao.create(sessionId, name);
 
-        // 3) add seats to reservation (може кинути DuplicateKey -> 409)
+        // 3) add seats to reservation
         try {
             reservationDao.addSeats(rid, seatIds);
         } catch (DuplicateKeyException e) {
@@ -92,7 +92,6 @@ public class BookingServiceImpl implements BookingService {
         Reservation r = get(reservationId);
         List<Long> seatIds = reservationDao.findSeatIds(reservationId);
 
-        // звільняємо місця
         seatDao.setReserved(seatIds, false);
 
         boolean ok = reservationDao.deleteById(reservationId);

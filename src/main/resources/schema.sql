@@ -10,7 +10,6 @@ CREATE TABLE movie_session (
                                start_time TIMESTAMP NOT NULL,
                                price NUMERIC(10,2) NOT NULL
 );
-
 CREATE TABLE seat (
                       id BIGSERIAL PRIMARY KEY,
                       session_id BIGINT NOT NULL REFERENCES movie_session(id) ON DELETE CASCADE,
@@ -19,17 +18,15 @@ CREATE TABLE seat (
                       reserved BOOLEAN NOT NULL DEFAULT FALSE,
                       UNIQUE(session_id, row_num, seat_num)
 );
-
 CREATE TABLE reservation (
                              id BIGSERIAL PRIMARY KEY,
                              session_id BIGINT NOT NULL REFERENCES movie_session(id) ON DELETE CASCADE,
                              customer_name TEXT NOT NULL,
                              created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
-
 CREATE TABLE reservation_seat (
                                   reservation_id BIGINT NOT NULL REFERENCES reservation(id) ON DELETE CASCADE,
                                   seat_id BIGINT NOT NULL REFERENCES seat(id) ON DELETE CASCADE,
                                   PRIMARY KEY(reservation_id, seat_id),
-                                  UNIQUE(seat_id) -- одне місце не може бути в двох бронюваннях
+                                  UNIQUE(seat_id)
 );

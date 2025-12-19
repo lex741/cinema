@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface MovieSessionService {
 
-    // --- новые методы (ЛР5) ---
     MovieSession get(long id);
 
     List<MovieSession> list(String title,
@@ -25,7 +24,6 @@ public interface MovieSessionService {
 
     void delete(long id);
 
-    // --- сумісність зі старим контролером (щоб зібралось без правок контролера) ---
     default List<MovieSession> list() {
         return list(null, null, null, null, 0, 100);
     }

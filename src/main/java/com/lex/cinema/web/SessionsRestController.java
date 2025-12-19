@@ -78,7 +78,6 @@ public class SessionsRestController {
     public MovieSession patch(@PathVariable long id, @RequestBody JsonNode patch) {
         MovieSession current = service.get(id);
 
-        // застосовуємо тільки ті поля, що прийшли
         if (patch.has("movieTitle")) current.setMovieTitle(patch.get("movieTitle").asText());
         if (patch.has("hall")) current.setHall(patch.get("hall").asText());
         if (patch.has("startTime")) current.setStartTime(LocalDateTime.parse(patch.get("startTime").asText()));
