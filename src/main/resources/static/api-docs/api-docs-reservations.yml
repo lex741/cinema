@@ -1,0 +1,288 @@
+openapi: 3.0.3
+info:
+  title: Cinema API - Reservations
+  version: 1.0.0
+  description: >
+    REST API для бронювання квитків (резервації місць).
+    Містить створення, перегляд, список (пагінація/фільтр) та скасування бронювання.
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Reservations
+    description: Операції з бронюваннями
+
+paths:
+  /api/reservations:
+    get:
+      tags: [Reservations]
+      summary: Список бронювань (фільтр + пагінація)
+      description: >
+        Повертає сторінку бронювань. Можна фільтрувати за sessionId та використовувати пагінацію page/size.
+      operationId: listReservations
+      parameters:
+        - name: sessionId
+          in: query
+          required: false
+          description: Показати бронювання лише для конкретного сеансу.
+          schema:
+            type: integer
+            format: int64
+          example: 1
+        - name: page
+          in: query
+          required: false
+          description: Номер сторінки (починається з 0).
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          example: 0
+        - name: size
+          in: query
+          required: false
+          description: Розмір сторінки (1..100).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          example: 10
+      responses:
+        "200":
+          description: OK — сторінка бронювань
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedReservationResponse"
+        "400":
+          description: Bad Request — некоректні параметри пагінації
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+    post:
+      tags: [Reservations]
+      summary: Створити бронювання
+      description: >
+        Бронює місця (seatIds) для конкретного сеансу (sessionId).
+        Може повернути 409, якщо хоча б одне місце вже зайняте.
+      operationId: createReservation
+      requestBody:
+        required: true
+        description: Дані для бронювання
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReservationCreateRequest"
+            examples:
+              example1:
+                value:
+                  sessionId: 1
+                  customerName: "Pavlo"
+                  seatIds: ["R1-S1", "R1-S2"]
+      responses:
+        "201":
+          description: Created — бронювання створено
+          headers:
+            Location:
+              description: URL створеного ресурсу
+              schema:
+                type: string
+              example: "/api/reservations/10"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+        "400":
+          description: Bad Request — seatIds порожній або некоректний
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Not Found — сеанс не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "409":
+          description: Conflict — місце вже зайняте
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /api/reservations/{id}:
+    get:
+      tags: [Reservations]
+      summary: Отримати бронювання за id
+      description: Повертає бронювання. Якщо id не знайдено — 404.
+      operationId: getReservation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID бронювання
+          schema:
+            type: integer
+            format: int64
+          example: 10
+      responses:
+        "200":
+          description: OK — дані бронювання
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+        "404":
+          description: Not Found — бронювання не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+    delete:
+      tags: [Reservations]
+      summary: Скасувати бронювання (видалити)
+      description: >
+        Видаляє бронювання та звільняє відповідні місця у сеансі.
+        Повертає 204 без тіла.
+      operationId: cancelReservation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID бронювання
+          schema:
+            type: integer
+            format: int64
+          example: 10
+      responses:
+        "204":
+          description: No Content — бронювання скасовано
+        "404":
+          description: Not Found — бронювання не знайдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+components:
+  schemas:
+    ApiError:
+      type: object
+      description: Структура помилки API
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          example: 409
+        error:
+          type: string
+          example: Conflict
+        message:
+          type: string
+          example: "Seat already reserved: R1-S1"
+        path:
+          type: string
+          example: /api/reservations
+
+    Reservation:
+      type: object
+      description: Бронювання (замовлення квитків)
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID бронювання
+          example: 10
+        sessionId:
+          type: integer
+          format: int64
+          description: ID сеансу
+          example: 1
+        customerName:
+          type: string
+          description: Ім'я клієнта
+          example: Pavlo
+        seatIds:
+          type: array
+          description: Список заброньованих місць
+          items:
+            type: string
+            example: R1-S1
+        createdAt:
+          type: string
+          format: date-time
+          description: Час створення бронювання
+          example: "2026-01-10T12:00:00"
+
+    ReservationCreateRequest:
+      type: object
+      description: Запит на створення бронювання
+      required: [sessionId, seatIds]
+      properties:
+        sessionId:
+          type: integer
+          format: int64
+          description: ID сеансу
+          example: 1
+        customerName:
+          type: string
+          description: Ім'я клієнта (може бути порожнім)
+          example: Pavlo
+        seatIds:
+          type: array
+          description: Список місць для бронювання
+          minItems: 1
+          items:
+            type: string
+            example: R1-S1
+
+    PagedReservationResponse:
+      type: object
+      description: Сторінка з бронюваннями
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Reservation"
+        page:
+          type: integer
+          example: 0
+        size:
+          type: integer
+          example: 10
+        totalElements:
+          type: integer
+          example: 12
+        totalPages:
+          type: integer
+          example: 2

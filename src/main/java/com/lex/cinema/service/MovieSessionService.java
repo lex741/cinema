@@ -1,5 +1,6 @@
 package com.lex.cinema.service;
 
+import com.lex.cinema.exception.NotFoundException;
 import com.lex.cinema.model.MovieSession;
 import com.lex.cinema.model.Seat;
 import com.lex.cinema.repository.MovieSessionRepository;
@@ -11,7 +12,7 @@ import java.util.List;
 @Service
 public class MovieSessionService {
 
-    private final MovieSessionRepository repo; // constructor injection
+    private final MovieSessionRepository repo;
 
     public MovieSessionService(MovieSessionRepository repo) {
         this.repo = repo;
@@ -22,7 +23,7 @@ public class MovieSessionService {
     }
 
     public MovieSession getOrThrow(Long id) {
-        return repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Session not found: " + id));
+        return repo.findById(id).orElseThrow(() -> new NotFoundException("Session not found: " + id));
     }
 
     public MovieSession create(MovieSession session, int rows, int seatsPerRow) {
@@ -31,7 +32,6 @@ public class MovieSessionService {
     }
 
     public MovieSession update(MovieSession session) {
-        // seats не перегенеровуємо при апдейті, щоб не “скидати” броні
         return repo.save(session);
     }
 
